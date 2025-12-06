@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Recomendación de Libros</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">
+                <span id="themeIcon">🌙</span>
+            </button>
+            <h1>Sistema de Recomendación de Libros</h1>
+            <p class="subtitle">Encuentra libros similares y palabras relevantes</p>
+        </header>
+
+        <main>
+            <div class="search-section">
+                <div class="input-group">
+                    <label for="bookInput">Escribe el nombre del libro:</label>
+                    <input 
+                        type="text" 
+                        id="bookInput" 
+                        list="booksList"
+                        placeholder="Ej: Pride_and_Prejudice_by_Jane_Austen"
+                        autocomplete="off"
+                    >
+                    <datalist id="booksList"></datalist>
+                </div>
+                <button id="searchBtn" class="btn-primary">Buscar</button>
+            </div>
+
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Cargando resultados...</p>
+            </div>
+
+            <div id="error" class="error hidden"></div>
+
+            <div class="library-section">
+                <button id="toggleLibrary" class="library-toggle">
+                    <span></span> Ver Biblioteca Completa
+                </button>
+                <div id="libraryList" class="library-list hidden">
+                    <div class="library-header">
+                        <h3>Biblioteca de Libros Disponibles</h3>
+                        <input type="text" id="librarySearch" placeholder="Buscar en biblioteca..." />
+                    </div>
+                    <div id="libraryBooks" class="library-books"></div>
+                </div>
+            </div>
+
+            <div id="results" class="results hidden">
+                <div class="result-section">
+                    <h2>Top 20 Palabras Más Relevantes</h2>
+                    <div id="topWords" class="word-cloud"></div>
+                </div>
+
+                <div class="result-section">
+                    <h2>Top 10 Libros Recomendados</h2>
+                    <div id="recommendations" class="recommendations-list"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Sistema de Recomendación basado en TF-IDF y Similitud Coseno</p>
+        </footer>
+    </div>
+
+    <!-- Modal para leer libros -->
+    <div id="bookModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalBookTitle">Título del Libro</h2>
+                <button id="closeModal" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="bookContent" class="book-content">
+                    <p>Cargando libro...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="page-info">
+                    <span id="pageInfo">Página 1 de 1</span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="firstPage" class="page-btn">Primera</button>
+                    <button id="prevPage" class="page-btn">Anterior</button>
+                    <label for="pageInput" class="sr-only">Ir a página:</label>
+                    <input type="number" id="pageInput" min="1" value="1" />
+                    <button id="nextPage" class="page-btn">Siguiente</button>
+                    <button id="lastPage" class="page-btn">Última</button>
+                </div>
+                <div class="reading-controls">
+                    <label for="linesPerPage">Líneas por página:</label>
+                    <select id="linesPerPage">
+                        <option value="20">20</option>
+                        <option value="30" selected>30</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

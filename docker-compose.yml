@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./Backend
+      dockerfile: Dockerfile
+    container_name: books-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persistir datos de libros
+      - ./Backend/data:/app/data
+    environment:
+      - PYTHONUNBUFFERED=1
+      - BOOKS_RAW_PATH=/app/data/raw_books
+      - BOOKS_CLEAN_PATH=/app/data/clean_books
+      - NLTK_DATA_DIR=/app/data/nltk_data
+    networks:
+      - books-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/books/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: books-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - books-network
+    restart: unless-stopped
+
+networks:
+  books-network:
+    driver: bridge
+
+volumes:
+  books-data:

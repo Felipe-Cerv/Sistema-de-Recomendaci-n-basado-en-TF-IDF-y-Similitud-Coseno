@@ -1,0 +1,22 @@
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Scripts
+*.bat
+*.ps1
+
+# Docs (no necesarios en producción)
+*.md
+!README.md
