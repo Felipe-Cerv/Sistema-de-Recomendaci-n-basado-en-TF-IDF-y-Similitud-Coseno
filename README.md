@@ -391,4 +391,7 @@ Este proyecto es para fines educativos.
 
 ## Autores
 
-Proyecto Final - Sistemas Distribuidos
+Cervantes Hernández José Felipe
+Guerrero Díaz Carlos Adolfo
+Juaréz Sánchez David
+García Soto Antonio Sebastían
