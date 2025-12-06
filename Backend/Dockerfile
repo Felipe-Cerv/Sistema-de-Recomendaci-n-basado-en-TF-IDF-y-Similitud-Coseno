@@ -10,8 +10,14 @@ RUN apt-get update && apt-get install -y \
     procps \
     && rm -rf /var/lib/apt/lists/*
 
-# Establecer variables de entorno para Java
-ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+# Detectar y configurar JAVA_HOME automáticamente para cualquier arquitectura (arm64/amd64)
+RUN ARCH=$(dpkg --print-architecture) && \
+    JAVA_HOME_PATH="/usr/lib/jvm/java-21-openjdk-${ARCH}" && \
+    echo "Arquitectura detectada: ${ARCH}" && \
+    echo "JAVA_HOME: ${JAVA_HOME_PATH}" && \
+    ln -sf "${JAVA_HOME_PATH}" /usr/lib/jvm/default-java
+
+ENV JAVA_HOME=/usr/lib/jvm/default-java
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Copiar archivos de requerimientos

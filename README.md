@@ -29,16 +29,36 @@ Sistema completo de recomendación de libros basado en TF-IDF y Similitud Coseno
 
 ## Inicio Rápido con Docker
 
-### 1. Clonar o ubicarse en el directorio del proyecto
+### 1. Clonar el repositorio
 
 ```bash
-cd ProyectoFinal
+git clone https://github.com/Felipe-Cerv/Sistema-de-Recomendaci-n-basado-en-TF-IDF-y-Similitud-Coseno.git
+cd Sistema-de-Recomendaci-n-basado-en-TF-IDF-y-Similitud-Coseno
 ```
 
 ### 2. Construir y ejecutar los contenedores
 
 ```bash
-docker-compose up -d
+docker compose up -d
+```
+
+**Compatibilidad Multi-Arquitectura**: El proyecto funciona en:
+- Mac Intel (x86_64)
+- Mac M1/M2/M3 (ARM64)
+- Linux (AMD64/ARM64)
+- Windows (AMD64)
+
+Docker detectará automáticamente tu arquitectura y configurará Java correctamente.
+
+**Nota para Linux**: Si obtienes un error `URLSchemeUnknown: Not supported URL scheme http+docker`, asegúrate de tener Docker Compose V2 instalado:
+
+```bash
+# Verificar versión
+docker compose version
+
+# Si no está instalado, instalar Docker Compose V2
+sudo apt-get update
+sudo apt-get install docker-compose-plugin
 ```
 
 Esto iniciará:
@@ -48,20 +68,20 @@ Esto iniciará:
 ### 3. Verificar que los servicios estén corriendo
 
 ```bash
-docker-compose ps
+docker compose ps
 ```
 
 ### 4. Ver los logs
 
 ```bash
 # Todos los servicios
-docker-compose logs -f
+docker compose logs -f
 
 # Solo backend
-docker-compose logs -f backend
+docker compose logs -f backend
 
 # Solo frontend
-docker-compose logs -f frontend
+docker compose logs -f frontend
 ```
 
 ### 5. Acceder a la aplicación
@@ -129,20 +149,20 @@ Abre tu navegador en `http://localhost`
 ### Detener los servicios
 
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Detener y eliminar volúmenes (reinicio completo)
 
 ```bash
-docker-compose down -v
+docker compose down -v
 ```
 
 ### Reconstruir las imágenes
 
 ```bash
-docker-compose build --no-cache
-docker-compose up -d
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ### Acceder al contenedor backend
@@ -165,15 +185,50 @@ docker stats
 
 ## Desarrollo Local (sin Docker)
 
+### Requisitos Previos
+
+**Java 21**: Requerido para PySpark
+
+- **Mac**: 
+  ```bash
+  brew install openjdk@21
+  ```
+
+- **Linux (Ubuntu/Debian)**:
+  ```bash
+  sudo apt-get update
+  sudo apt-get install openjdk-21-jre-headless
+  ```
+
+- **Windows**: Descargar de [Adoptium](https://adoptium.net/) o [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download)
+
 ### Backend
 
+**Mac/Linux**:
 ```bash
 cd Backend
 pip install -r requirements.txt
-python main.py
-# o
-uvicorn main:app --reload
+
+# Dar permisos de ejecución al script
+chmod +x start_server.sh
+./start_server.sh
 ```
+
+**Windows (PowerShell)**:
+```bash
+cd Backend
+pip install -r requirements.txt
+.\start_server.ps1
+```
+
+**Windows (CMD)**:
+```bash
+cd Backend
+pip install -r requirements.txt
+start_server.bat
+```
+
+Los scripts detectarán automáticamente Java 21 en tu sistema.
 
 ### Frontend
 
@@ -222,11 +277,77 @@ NLTK_DATA_DIR=./data/nltk_data
 
 ## Solución de Problemas
 
+### Error: URLSchemeUnknown: Not supported URL scheme http+docker (Linux)
+
+Este error ocurre cuando se usa una versión vieja de `docker-compose`. **Solución**:
+
+```bash
+# Opción 1: Usar Docker Compose V2 (recomendado)
+docker compose up -d
+
+# Opción 2: Instalar Docker Compose Plugin
+sudo apt-get update
+sudo apt-get install docker-compose-plugin
+
+# Opción 3: Actualizar docker-compose
+sudo apt-get remove docker-compose
+sudo apt-get install docker-compose-plugin
+```
+
 ### El backend no inicia
 
-- Verificar logs: `docker-compose logs backend`
+- Verificar logs: `docker compose logs backend`
 - Asegurar que Java esté instalado en el contenedor (necesario para Spark)
 - Verificar que los puertos no estén en uso
+
+### Error "Java not found" en desarrollo local
+
+**Solo aplica cuando ejecutas el backend SIN Docker.** Si usas Docker, Java ya está incluido.
+
+**Mac**:
+```bash
+# Instalar Java 21 con Homebrew
+brew install openjdk@21
+
+# Configurar JAVA_HOME en ~/.zshrc o ~/.bash_profile
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.zshrc
+echo 'export PATH="$JAVA_HOME/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+# Verificar
+java -version
+```
+
+**Linux (Ubuntu/Debian)**:
+```bash
+# Instalar Java 21
+sudo apt-get update
+sudo apt-get install openjdk-21-jre-headless
+
+# Verificar
+java -version
+```
+
+**Windows**: Ver sección de Requisitos Previos arriba.
+
+Los scripts `start_server.sh`, `start_server.ps1` y `start_server.bat` detectarán automáticamente Java 21.
+
+### Error "JAVA_HOME not found" en Docker (Mac M1/M2/M3)
+
+Si el contenedor backend muestra error de Java:
+
+```bash
+# Reconstruir la imagen sin caché
+docker compose down
+docker compose build --no-cache backend
+docker compose up -d
+
+# Verificar que Java se detectó correctamente
+docker compose exec backend java -version
+docker compose exec backend echo $JAVA_HOME
+```
+
+El Dockerfile ahora detecta automáticamente la arquitectura (arm64 o amd64) y configura Java correctamente.
 
 ### El frontend no se conecta al backend
 
@@ -245,6 +366,15 @@ NLTK_DATA_DIR=./data/nltk_data
 - Verificar que los archivos existen en `Backend/data/raw_books/`
 - Verificar permisos de archivos
 - Revisar logs del backend para errores
+
+### Permisos en Linux
+
+Si tienes problemas de permisos con los volúmenes de Docker en Linux:
+
+```bash
+sudo chown -R $USER:$USER ./Backend/data
+chmod -R 755 ./Backend/data
+```
 
 ## Tecnologías Utilizadas
 
