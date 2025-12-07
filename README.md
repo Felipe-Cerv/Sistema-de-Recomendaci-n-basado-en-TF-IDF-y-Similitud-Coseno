@@ -394,4 +394,5 @@ Este proyecto es para fines educativos.
 Cervantes Hernández José Felipe
 Guerrero Díaz Carlos Adolfo
 Juaréz Sánchez David
+Barraza Acosta José Sebastían
 García Soto Antonio Sebastían
